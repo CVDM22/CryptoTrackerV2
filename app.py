@@ -29,20 +29,18 @@ def index():
 
 
 def retrieve_data():
-    #print("ok1")
     # create dictionary for saving current prices
     current_prices = {}
     for currency in currencies:
         current_prices[currency] = []
     # append new time to list of times
     times.append(time.strftime('%H:%M:%S'))
-    #print("ok2")
 
     # make request to API and get response as object
     api_url = "https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=EUR".format(",".join(currencies))
     response = json.loads(requests.get(api_url).content)
 
-    # append new price to list of prices for graph
+    # append new price to list of prices for graphs 
     # and set current price for bar chart
     for currency in currencies:
         price = response[currency]['EUR']
@@ -55,13 +53,13 @@ def retrieve_data():
         x=times, 
         y=prices["BTC"],
         name="{} Prices BTC",
-        )]# for currency in currencies]
+        )]
 
     graph_data2 = [go.Scatter(
         x=times, 
         y=prices["ETH"],
         name="{} Prices ETH",
-        )]# for currency in currencies]
+        )]
 
     # create an array of traces for bar chart data
     bar_chart_data = [go.Bar(
