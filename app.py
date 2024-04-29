@@ -1,21 +1,23 @@
 # ./app.py
+import os
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from pusher import Pusher
+import pusher
 import requests, json, atexit, time, plotly, plotly.graph_objs as go
 
 # create flask app
 app = Flask(__name__)
 
-# configure pusher object
-pusher = Pusher(
-    app_id='ID',
-    key='KEY',
-    secret='SECRET',
-    cluster='CLUSTER',
+
+pusher_CT = pusher.Pusher(
+    app_id=os.environ.get("CT_APP_ID"),
+    key=os.environ.get("CT_APP_KEY"),
+    secret=os.environ.get("CT_APP_SECRET"),
+    cluster='eu',
     ssl=True
 )
+
 
 # define variables for data retrieval
 times = []
@@ -45,6 +47,7 @@ def retrieve_data():
     for currency in currencies:
         price = response[currency]['EUR']
         current_prices[currency] = price
+        print(current_prices)
         prices[currency].append(price)
         #print(prices["BTC"])
 
@@ -74,7 +77,7 @@ def retrieve_data():
     }
 
     # trigger event
-    pusher.trigger("crypto", "data-updated", data)
+    pusher_CT.trigger("crypto", "data-updated", data)
 
 
 # create schedule for retrieving prices
